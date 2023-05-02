@@ -23,7 +23,7 @@ class Downloader():
     def start(self):
         songinfo, session, headers = self.songinfo, self.session, self.headers
         touchdir(songinfo['savedir'])
-        with session.get(songinfo['download_url'], headers=headers, stream=True) as response:
+        with session.get(songinfo['download_url'], headers=headers, stream=True, timeout=30) as response:
             if response.status_code not in [200]: return False
             total_size, chunk_size, downloaded_size = int(response.headers['content-length']), songinfo.get('chunk_size', 1024), 0
             savepath = os.path.join(songinfo['savedir'], f"{songinfo['savename']}.{songinfo['ext']}")

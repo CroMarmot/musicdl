@@ -35,7 +35,7 @@ class Kugou(Base):
             'privilege_filter': '0',
             '_': str(int(time.time() * 1000))
         }
-        response = self.session.get(self.search_url, headers=self.search_headers, params=params)
+        response = self.session.get(self.search_url, headers=self.search_headers, params=params, timeout=10)
         all_items = response.json()['data']['lists']
         songinfos = []
         for item in all_items:
@@ -48,7 +48,7 @@ class Kugou(Base):
                 'platid': '4',
                 '_': str(int(time.time() * 1000))
             }
-            response = self.session.get(self.hash_url, headers=self.hash_headers, params=params)
+            response = self.session.get(self.hash_url, headers=self.hash_headers, params=params, timeout=10)
             response_json = response.json()
             if response_json.get('err_code') != 0: continue
             download_url = response_json['data']['play_url'].replace('\\', '')
@@ -59,7 +59,7 @@ class Kugou(Base):
                 'hash': item.get('FileHash', '')
             }
             self.lyric_headers.update({'Referer': f'http://m.kugou.com/play/info/{str(item["ID"])}'})
-            response = self.session.get(self.lyric_url, headers=self.lyric_headers, params=params)
+            response = self.session.get(self.lyric_url, headers=self.lyric_headers, params=params, timeout=10)
             response.encoding = 'utf-8'
             lyric = response.text
             filesize = str(round(int(response_json['data']['filesize'])/1024/1024, 2)) + 'MB'

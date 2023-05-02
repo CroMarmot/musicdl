@@ -29,13 +29,13 @@ class Ximalaya(Base):
             'device': 'iPhone',
             'live': 'true',
         }
-        response = self.session.get(self.search_url, params=params, headers=self.headers)
+        response = self.session.get(self.search_url, params=params, headers=self.headers, timeout=10)
         all_items = response.json()['data']['track']['docs']
         songinfos = []
         for item in all_items:
             headers = self.headers.copy()
             headers['Referer'] = f'https://www.ximalaya.com/sound/{item["id"]}'
-            response = self.session.get(self.songinfo_url.format(str(item['id'])), headers=headers)
+            response = self.session.get(self.songinfo_url.format(str(item['id'])), headers=headers, timeout=10)
             if response.json()['ret'] not in [200]: continue
             download_url = response.json()['data'].get('src', '')
             if not download_url: continue

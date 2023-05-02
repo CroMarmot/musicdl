@@ -22,7 +22,8 @@ class Base():
     def search(self, keyword):
         raise NotImplementedError('not be implemented')
     '''歌曲下载'''
-    def download(self, songinfos):
+    def download(self, songinfos) -> bool:
+        ok = True
         for songinfo in songinfos:
             self.logger_handle.info('正在从%s下载 >>>> %s' % (colorize(self.source.upper(), 'highlight'), colorize(songinfo['savename'], 'highlight')))
             task = Downloader(songinfo, self.session)
@@ -30,6 +31,8 @@ class Base():
                 self.logger_handle.info('成功从%s下载到了 >>>> %s' % (colorize(self.source.upper(), 'highlight'), colorize(songinfo['savename'], 'highlight')))
             else:
                 self.logger_handle.info('无法从%s下载 >>>> %s' % (colorize(self.source.upper(), 'highlight'), colorize(songinfo['savename'], 'highlight')))
+                ok = False
+        return ok
     '''初始化'''
     def __initialize(self):
         raise NotImplementedError('not be implemented')

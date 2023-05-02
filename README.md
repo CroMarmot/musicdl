@@ -1,3 +1,16 @@
+# Quick Start
+
+```
+pip install -r requirements.txt
+./qq_migu_downloader_match.py down --dry-run 周杰伦 一路向北
+./qq_migu_downloader_match.py down 周杰伦 一路向北
+./qq_migu_downloader_match.py csvdown --dry-run demo.csv
+./qq_migu_downloader_match.py csvdown demo.csv
+./qq_migu_downloader_match.py csvdown demo.csv -s /tmp/folder
+```
+
+# Orignial
+
 <div align="center">
   <img src="./docs/logo.png" width="600"/>
 </div>
@@ -25,7 +38,7 @@ You can star this repository to keep track of the project if it's helpful for yo
 # Statement
 ```
 This repository is created just for learning python(Commercial prohibition).
-All the apis used in this repository are from public network. So, if you want to download the paid songs, 
+All the apis used in this repository are from public network. So, if you want to download the paid songs,
 please open a paid member on corresponding music platform by yourself (respect the music copyright please).
 Finally, if there are any infringements, please contact me to delete this repository.
 ```
@@ -139,5 +152,5 @@ If you use this project in your research, please cite this project.
 
 # More
 #### WeChat Official Accounts
-*Charles_pikachu*  
+*Charles_pikachu*
 ![img](./docs/pikachu.jpg)

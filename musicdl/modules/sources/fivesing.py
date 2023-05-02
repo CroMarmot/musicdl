@@ -23,7 +23,7 @@ class FiveSing(Base):
     def search(self, keyword, disable_print=True):
         if not disable_print: self.logger_handle.info('正在%s中搜索 >>>> %s' % (self.source, keyword))
         cfg = self.config.copy()
-        response = self.session.get(self.search_url+keyword, headers=self.headers)
+        response = self.session.get(self.search_url+keyword, headers=self.headers, timeout=10)
         response.encoding = 'uft-8'
         all_items = re.findall(r"dataList = '(.*?)';", response.text)[0]
         all_items = all_items.replace(r'<em class=\\\"keyword\\\">', '')
@@ -43,7 +43,7 @@ class FiveSing(Base):
                 'songid': str(item['songId']),
                 'songtype': 'yc' if 'yc' in item['downloadurl'] else 'fc'
             }
-            response = self.session.get(self.songinfo_url, headers=self.headers, params=params)
+            response = self.session.get(self.songinfo_url, headers=self.headers, params=params, timeout=10)
             response_json = response.json()
             if response_json.get('code') != 1000: continue
             for quality in ['sq', 'hq', 'lq']:
@@ -58,7 +58,7 @@ class FiveSing(Base):
                 'songfields': '',
                 'userfields': '',
             }
-            response = self.session.get(self.lyric_url, headers=self.headers, params=params)
+            response = self.session.get(self.lyric_url, headers=self.headers, params=params, timeout=10)
             response_json = response.json()
             lyric = response_json.get('data', {}).get('dynamicWords', '')
             duration = '-:-:-'

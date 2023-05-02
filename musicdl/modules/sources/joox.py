@@ -31,7 +31,7 @@ class Joox(Base):
             'sin': '0',
             'ein': cfg['search_size_per_source']
         }
-        response = self.session.get(self.search_url, headers=self.headers, params=params)
+        response = self.session.get(self.search_url, headers=self.headers, params=params, timeout=10)
         all_items = response.json()['itemlist']
         songinfos = []
         for item in all_items:
@@ -43,7 +43,7 @@ class Joox(Base):
                 'channel_id': '-1',
                 '_': str(int(time.time()*1000))
             }
-            response = self.session.get(self.songinfo_url, headers=self.headers, params=params)
+            response = self.session.get(self.songinfo_url, headers=self.headers, params=params, timeout=10)
             response_json = json.loads(response.text.replace('MusicInfoCallback(', '')[:-1])
             if response_json.get('code') != 0: continue
             for q_key in [('r320Url', '320'), ('r192Url', '192'), ('mp3Url', '128')]:
@@ -57,7 +57,7 @@ class Joox(Base):
                 'country': 'hk',
                 'lang': 'zh_cn',
             }
-            response = self.session.get(self.lyric_url, headers=self.lyric_headers, params=params)
+            response = self.session.get(self.lyric_url, headers=self.lyric_headers, params=params, timeout=10)
             lyric = base64.b64decode(response.json().get('lyric', '')).decode('utf-8')
             duration = int(item.get('playtime', 0))
             songinfo = {

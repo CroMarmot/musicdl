@@ -21,7 +21,7 @@ class Kuwo(Base):
     '''歌曲搜索'''
     def search(self, keyword, disable_print=True):
         if not disable_print: self.logger_handle.info('正在%s中搜索 >>>> %s' % (self.source, keyword))
-        response = self.session.get('http://kuwo.cn/search/list?key=hello', headers=self.headers)
+        response = self.session.get('http://kuwo.cn/search/list?key=hello', headers=self.headers, timeout=10)
         cookies, token = response.cookies, response.cookies.get('kw_token')
         self.headers['csrf'] = token
         cfg = self.config.copy()
@@ -30,7 +30,7 @@ class Kuwo(Base):
             'pn': str(cfg.get('page', 1)),
             'rn': cfg['search_size_per_source'],
         }
-        response = self.session.get(self.search_url, headers=self.headers, params=params, cookies=cookies)
+        response = self.session.get(self.search_url, headers=self.headers, params=params, cookies=cookies, timeout=10)
         all_items = response.json()['data']['list']
         songinfos = []
         for item in all_items:
@@ -42,7 +42,7 @@ class Kuwo(Base):
                     'type': 'convert_url',
                     'response': 'url',
                 }
-                download_url = self.session.get(self.player_url, params=params).text
+                download_url = self.session.get(self.player_url, params=params, timeout=10).text
                 if not (download_url.startswith('http://') or download_url.startswith('https://')): continue
                 break
             if not (download_url.startswith('http://') or download_url.startswith('https://')): continue
@@ -50,7 +50,7 @@ class Kuwo(Base):
                 'musicId': str(item['rid'])
             }
             self.lyric_headers.update({'Referer': f'http://m.kuwo.cn/yinyue/{str(item["rid"])}'})
-            response = self.session.get(self.lyric_url, headers=self.lyric_headers, params=params)
+            response = self.session.get(self.lyric_url, headers=self.lyric_headers, params=params, timeout=10)
             lyric = response.json().get('data', {}).get('lrclist', '')
             filesize = '-MB'
             ext = download_url.split('.')[-1]

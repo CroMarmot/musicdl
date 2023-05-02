@@ -22,11 +22,11 @@ class Lizhi(Base):
     def search(self, keyword, disable_print=True):
         if not disable_print: self.logger_handle.info('正在%s中搜索 >>>> %s' % (self.source, keyword))
         cfg = self.config.copy()
-        response = self.session.get(self.search_url.format(keyword), headers=self.headers)
+        response = self.session.get(self.search_url.format(keyword), headers=self.headers, timeout=10)
         all_items = response.json()['audio']['data']        
         songinfos = []
         for item in all_items:
-            response = self.session.get(self.songinfo_url.format(item['audio']['id']), headers=self.headers)
+            response = self.session.get(self.songinfo_url.format(item['audio']['id']), headers=self.headers, timeout=10)
             response_json = response.json()
             if response_json['code'] != 0: continue
             download_url = response_json['data'].get('userVoice', {}).get('voicePlayProperty', {}).get('trackUrl', '')

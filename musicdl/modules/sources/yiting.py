@@ -27,7 +27,7 @@ class YiTing(Base):
             'page': str(cfg.get('page', 1)),
             'size': cfg['search_size_per_source'],
         }
-        response = self.session.get(self.search_url, headers=self.headers, params=params)
+        response = self.session.get(self.search_url, headers=self.headers, params=params, timeout=10)
         all_items = response.json()['results']
         songinfos = []
         for item in all_items:
@@ -35,12 +35,12 @@ class YiTing(Base):
                 'ids': item['song_id']
             }
             self.headers.update({'Referer': f'http://h5.1ting.com/{item["song_id"]}/song/'})
-            response = self.session.get(self.songinfo_url, headers=self.headers, params=params)
+            response = self.session.get(self.songinfo_url, headers=self.headers, params=params, timeout=10)
             response_json = response.json()[0]
             if 'song_filepath' not in response_json: continue
             download_url = 'http://h5.1ting.com/file?url=' + response_json['song_filepath'].replace('.wma', '.mp3')
             self.headers.update({'Referer': f'http://www.1ting.com/geci{item["song_id"]}.html'})
-            response = self.session.get(self.lyric_url+str(item['song_id']), headers=self.headers)
+            response = self.session.get(self.lyric_url+str(item['song_id']), headers=self.headers, timeout=10)
             response.encoding = 'utf-8'
             lyric = response.text
             filesize = '-MB'

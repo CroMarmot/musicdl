@@ -10,6 +10,7 @@ import os
 import sys
 import copy
 import json
+from typing import Any, Dict, List
 import click
 import threading
 if __name__ == '__main__':
@@ -106,7 +107,7 @@ class musicdl():
             for songpath in songpaths:
                 sr_api.synthesisspeak(audiopath=songpath)
     '''音乐搜索'''
-    def search(self, keyword, target_srcs):
+    def search(self, keyword, target_srcs) -> Dict[str,List[Dict[str,str]]]:
         self.logger_handle.info(f'正在搜索 {colorize(keyword, "highlight")} 来自 {colorize("|".join([c.upper() for c in target_srcs]), "highlight")}')
         def threadSearch(search_api, keyword, target_src, search_results):
             try:
@@ -127,8 +128,14 @@ class musicdl():
         return search_results
     '''音乐下载'''
     def download(self, songinfos):
+        ok_list = []
         for songinfo in songinfos:
-            getattr(self, songinfo['source']).download([songinfo])
+            try:
+                if getattr(self, songinfo['source']).download([songinfo]):
+                    ok_list.append(songinfo)
+            except:
+                pass
+        return ok_list
     '''初始化所有支持的搜索/下载源'''
     def initializeAllSources(self):
         supported_sources = {

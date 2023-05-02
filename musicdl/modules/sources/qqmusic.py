@@ -36,7 +36,7 @@ class QQMusic(Base):
                 'query': keyword, 'page_num': str(cfg.get('page', 1)), 'num_per_page': cfg['search_size_per_source']}
             }
         }, ensure_ascii=False).encode('utf-8')
-        response = self.session.post(self.search_url.format(int(round(time.time() * 1000))), headers=self.headers, data=data)
+        response = self.session.post(self.search_url.format(int(round(time.time() * 1000))), headers=self.headers, data=data, timeout=10)
         all_items = response.json()['req_0']['data']['body']['song']['list']
         songinfos = []
         for item in all_items:
@@ -53,9 +53,10 @@ class QQMusic(Base):
             ext = ''
             download_url = ''
             filesize = '-MB'
-            for quality in [("A000", "ape", 800), ("F000", "flac", 800), ("M800", "mp3", 320), ("C400", "m4a", 128), ("M500", "mp3", 128)]:
+            # prefer mp3
+            for quality in [("M800", "mp3", 320), ("M500", "mp3", 128), ("A000", "ape", 800), ("F000", "flac", 800), ("C400", "m4a", 128) ]:
                 params['filename'] = '%s%s.%s' % (quality[0], item['mid'], quality[1])
-                response = self.session.get(self.mobile_fcg_url, headers=self.ios_headers, params=params)
+                response = self.session.get(self.mobile_fcg_url, headers=self.ios_headers, params=params, timeout=10)
                 response_json = response.json()
                 if response_json['code'] != 0: continue
                 vkey = response_json.get('data', {}).get('items', [{}])[0].get('vkey', '')
@@ -75,7 +76,7 @@ class QQMusic(Base):
                         "comm": {"uin": 0, "format": "json", "ct": 24, "cv": 0}
                     })
                 }
-                response = self.session.get(self.fcg_url, headers=self.ios_headers, params=params)
+                response = self.session.get(self.fcg_url, headers=self.ios_headers, params=params, timeout=10)
                 response_json = response.json()
                 if response_json['code'] == 0 and response_json['req']['code'] == 0 and response_json['req_0']['code'] == 0:
                     ext = 'm4a'
@@ -95,7 +96,7 @@ class QQMusic(Base):
                 'outCharset': 'utf-8',
                 'platform': 'yqq'
             }
-            response = self.session.get(self.lyric_url, headers={'Referer': 'https://y.qq.com/portal/player.html'}, params=params)
+            response = self.session.get(self.lyric_url, headers={'Referer': 'https://y.qq.com/portal/player.html'}, params=params, timeout=10)
             lyric = base64.b64decode(response.json().get('lyric', '')).decode('utf-8')
             filesize = str(round(filesize/1024/1024, 2)) + 'MB'
             duration = int(item.get('interval', 0))

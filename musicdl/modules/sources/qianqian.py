@@ -29,7 +29,7 @@ class Qianqian(Base):
             'timestamp': str(int(time.time())),
             'appid': '16073360',
         }
-        response = self.session.get(self.search_url, headers=self.headers, params=params)
+        response = self.session.get(self.search_url, headers=self.headers, params=params, timeout=10)
         all_items = response.json()['data']['typeTrack']
         songinfos = []
         for item in all_items:
@@ -39,7 +39,7 @@ class Qianqian(Base):
                 'timestamp': str(int(time.time())),
                 'appid': '16073360',
             }
-            response = self.session.get(self.tracklink_url, headers=self.headers, params=params)
+            response = self.session.get(self.tracklink_url, headers=self.headers, params=params, timeout=10)
             response_json = response.json()
             if response_json.get('errno') != 22000: continue
             if 'path' in response_json['data']:
@@ -49,7 +49,7 @@ class Qianqian(Base):
             if not download_url: continue
             lyric_url, lyric = response_json['data'].get('lyric', ''), ''
             if lyric_url:
-                response = self.session.get(lyric_url, headers=self.headers)
+                response = self.session.get(lyric_url, headers=self.headers, timeout=10)
                 response.encoding = 'utf-8'
                 lyric = response.text
             filesize = str(round(int(response_json['data']['size'])/1024/1024, 2)) + 'MB'

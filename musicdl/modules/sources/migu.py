@@ -30,7 +30,7 @@ class Migu(Base):
             'pageSize': cfg['search_size_per_source'],
             'searchSwitch': '{"song":1,"album":0,"singer":0,"tagSong":0,"mvSong":0,"songlist":0,"bestShow":1}',
         }
-        response = self.session.get(self.search_url, headers=self.headers, params=params)
+        response = self.session.get(self.search_url, headers=self.headers, params=params, timeout=10)
         all_items = response.json()['songResultData']['result']
         songinfos = []
         for item in all_items:
@@ -39,6 +39,7 @@ class Migu(Base):
             filesize = '-MB'
             for rate in sorted(item.get('rateFormats', []), key=lambda x: int(x['size']), reverse=True):
                 if (int(rate['size']) == 0) or (not rate.get('formatType', '')) or (not rate.get('resourceType', '')): continue
+                # 强制mp3可能会 链接报错 {"code":"200002","info":"PE参数格式错误"}
                 ext = 'flac' if rate.get('formatType') == 'SQ' else 'mp3'
                 if ext != 'flac':
                     download_url = self.player_url.format(
@@ -54,7 +55,7 @@ class Migu(Base):
             if not download_url: continue
             lyric_url, lyric = item.get('lyricUrl', ''), ''
             if lyric_url:
-                response = self.session.get(lyric_url, headers=self.headers)
+                response = self.session.get(lyric_url, headers=self.headers, timeout=10)
                 response.encoding = 'utf-8'
                 lyric = response.text
             duration = '-:-:-'

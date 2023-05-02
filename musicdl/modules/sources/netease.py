@@ -70,7 +70,7 @@ class Netease(Base):
             'sub': 'false',
             'limit': cfg['search_size_per_source']
         }
-        response = self.session.post(self.search_url, headers=self.headers, params=params, data=self.cracker.get(params))
+        response = self.session.post(self.search_url, headers=self.headers, params=params, data=self.cracker.get(params), timeout=10)
         all_items = response.json()['result']['songs']
         songinfos = []
         for item in all_items:
@@ -82,7 +82,7 @@ class Netease(Base):
                         'br': item[q]['br'],
                         'csrf_token': ''
                     }
-                    response = self.session.post(self.player_url, headers=self.headers, data=self.cracker.get(params))
+                    response = self.session.post(self.player_url, headers=self.headers, data=self.cracker.get(params), timeout=10)
                     response_json = response.json()
                     if response_json.get('code') == 200: break
                 if response_json.get('code') != 200: continue
@@ -91,7 +91,7 @@ class Netease(Base):
                 filesize = str(round(int(response_json['data'][0]['size']) / 1024 / 1024, 2)) + 'MB'
                 ext = response_json['data'][0]['type']
             except:
-                response = self.session.get(self.downloadinfo_url.format(item['id']), headers=self.info_headers)
+                response = self.session.get(self.downloadinfo_url.format(item['id']), headers=self.info_headers, timeout=10)
                 response_json = json.loads(response.text)
                 download_url = response_json[0]['url']
                 filesize, ext = '-', 'mp3'
@@ -101,7 +101,7 @@ class Netease(Base):
                 'lv': '-1',
                 'tv': '-1'
             }
-            response = self.session.post(self.lyric_url, headers=self.headers, data=self.cracker.get(params))
+            response = self.session.post(self.lyric_url, headers=self.headers, data=self.cracker.get(params), timeout=10)
             lyric = response.json().get('lrc', {}).get('lyric', '')
             duration = int(item.get('dt', 0) / 1000)
             songinfo = {
